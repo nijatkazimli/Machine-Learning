@@ -17,7 +17,7 @@ def choose_folder():
 def choose_video():
     file_path = filedialog.askopenfilename()
     print("File Selected:", file_path)
-    face_recognition.handle_video(file_path)
+    face_recognition.handle_video(file_path, screen_width, screen_height)
 
 def start_camera():
     cap = cv2.VideoCapture(0)
@@ -25,6 +25,9 @@ def start_camera():
 
 root = tk.Tk()
 root.title("Face Recognition / Age Detection")
+
+screen_width = root.winfo_screenwidth()
+screen_height = root.winfo_screenheight()
 
 style = ttk.Style()
 style.configure('TButton', font=('Arial', 10))

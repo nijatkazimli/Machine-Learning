@@ -11,7 +11,6 @@ def draw_face_rectangles(image, faces):
     for (x, y, w, h) in faces:
         cv2.rectangle(image, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
-
 def handle_camera(cap):
     while True:
         ret, frame = cap.read()
@@ -36,10 +35,16 @@ def handle_image(image_path):
     if key == ord('q') or key == 27:
         cv2.destroyAllWindows()
 
-def handle_video(video_path):
+def handle_video(video_path, width, height):
     cap = cv2.VideoCapture(video_path)
     while True:
         ret, frame = cap.read()
+        if not ret:
+            break
+
+        # Resize frame to fit screen
+        frame = cv2.resize(frame, (width, height))
+
         faces = detect_faces(frame)
         draw_face_rectangles(frame, faces)
         cv2.imshow('Video Face Detection', frame)
@@ -49,6 +54,7 @@ def handle_video(video_path):
             break
     cap.release()
     cv2.destroyAllWindows()
+
 
 
 
