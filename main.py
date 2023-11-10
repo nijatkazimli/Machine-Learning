@@ -16,7 +16,7 @@ def choose_folder():
 
 def choose_video():
     file_path = filedialog.askopenfilename()
-    print("File Selected:", file_path)
+    print("File selected:", file_path)
     face_recognition.handle_video(file_path)
 
 def start_camera():
