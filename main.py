@@ -1,16 +1,42 @@
-# This is a sample Python script.
+import tkinter as tk
+from tkinter import filedialog, ttk
+from PIL import Image
+import face_recognition
+import cv2
+import os
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+def choose_folder():
+    folder_path = filedialog.askdirectory()
+    print("Folder Selected:", folder_path)
+    for file in os.listdir(folder_path):
+        if file.lower().endswith(('.png', '.jpg', '.jpeg', '.tiff', '.bmp', '.gif')):
+            image_path = os.path.join(folder_path, file)
+            print("Processing image:", image_path)
+            face_recognition.handle_image(image_path)
 
+def choose_video():
+    file_path = filedialog.askopenfilename()
+    print("File Selected:", file_path)
+    face_recognition.handle_video(file_path)
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+def start_camera():
+    cap = cv2.VideoCapture(0)
+    face_recognition.handle_camera(cap)
 
+root = tk.Tk()
+root.title("Face Recognition / Age Detection")
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('Kurwa w koncu dziala')
+style = ttk.Style()
+style.configure('TButton', font=('Arial', 10))
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+btn_choose_folder = ttk.Button(root, text="Choose Photo Folder", command=choose_folder)
+btn_choose_folder.pack(fill='x', padx=10, pady=5)
+
+btn_choose_video = ttk.Button(root, text="Choose Video", command=choose_video)
+btn_choose_video.pack(fill='x', padx=10, pady=5)
+
+btn_live_feed = ttk.Button(root, text="Start Live Camera", command=start_camera)
+btn_live_feed.pack(fill='x', padx=10, pady=5)
+
+root.mainloop()
+
