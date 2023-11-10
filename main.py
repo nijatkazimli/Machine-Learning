@@ -30,13 +30,24 @@ style = ttk.Style()
 style.configure('TButton', font=('Arial', 10))
 
 btn_choose_folder = ttk.Button(root, text="Choose Photo Folder", command=choose_folder)
-btn_choose_folder.pack(fill='x', padx=10, pady=5)
+btn_choose_folder.grid(row=1, column=0, sticky='nsew', padx=10, pady=5)
 
 btn_choose_video = ttk.Button(root, text="Choose Video", command=choose_video)
-btn_choose_video.pack(fill='x', padx=10, pady=5)
+btn_choose_video.grid(row=3, column=0, sticky='nsew', padx=10, pady=5)
 
 btn_live_feed = ttk.Button(root, text="Start Live Camera", command=start_camera)
-btn_live_feed.pack(fill='x', padx=10, pady=5)
+btn_live_feed.grid(row=5, column=0, sticky='nsew', padx=10, pady=5)
+
+root.columnconfigure(0, weight=1)
+
+root.rowconfigure(1, weight=1)
+root.rowconfigure(3, weight=1)
+root.rowconfigure(5, weight=1)
+
+root.rowconfigure(0, weight=0)
+root.rowconfigure(2, weight=0)
+root.rowconfigure(4, weight=0)
+root.rowconfigure(6, weight=0)
 
 root.mainloop()
 
