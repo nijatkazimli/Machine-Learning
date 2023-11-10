@@ -18,7 +18,7 @@ def handle_camera(cap):
         if ret:
             faces = detect_faces(frame)
             draw_face_rectangles(frame, faces)
-            cv2.imshow('Camera Face Detection show', frame)
+            cv2.imshow('Camera Face Detection', frame)
             cv2.setWindowProperty('Camera Face Detection', cv2.WND_PROP_TOPMOST, 1)
             key = cv2.waitKey(1)
             if key == ord('q') or key == 27:
@@ -30,7 +30,7 @@ def handle_image(image_path):
     image = cv2.imread(image_path)
     faces = detect_faces(image)
     draw_face_rectangles(image, faces)
-    cv2.imshow('Image Face Detection show', image)
+    cv2.imshow('Image Face Detection', image)
     cv2.setWindowProperty('Image Face Detection', cv2.WND_PROP_TOPMOST, 1)
     key = cv2.waitKey(0)
     if key == ord('q') or key == 27:
@@ -42,7 +42,7 @@ def handle_video(video_path):
         ret, frame = cap.read()
         faces = detect_faces(frame)
         draw_face_rectangles(frame, faces)
-        cv2.imshow('Video Face Detection show', frame)
+        cv2.imshow('Video Face Detection', frame)
         cv2.setWindowProperty('Video Face Detection', cv2.WND_PROP_TOPMOST, 1)
         key = cv2.waitKey(1)
         if key == ord('q') or key == 27:
