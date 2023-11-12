@@ -20,7 +20,7 @@ def handle_camera(cap):
             cv2.imshow('Camera Face Detection', frame)
             cv2.setWindowProperty('Camera Face Detection', cv2.WND_PROP_TOPMOST, 1)
             key = cv2.waitKey(1)
-            if key == ord('q') or key == 27:
+            if key == ord('q') or key == 27 or cv2.getWindowProperty('Camera Face Detection', cv2.WND_PROP_VISIBLE) < 1:
                 break
     cap.release()
     cv2.destroyAllWindows()
@@ -32,7 +32,7 @@ def handle_image(image_path):
     cv2.imshow('Image Face Detection', image)
     cv2.setWindowProperty('Image Face Detection', cv2.WND_PROP_TOPMOST, 1)
     key = cv2.waitKey(0)
-    if key == ord('q') or key == 27:
+    if key == ord('q') or key == 27 or cv2.getWindowProperty('Image Face Detection', cv2.WND_PROP_VISIBLE) < 1:
         cv2.destroyAllWindows()
 
 def handle_video(video_path, width, height):
@@ -50,12 +50,7 @@ def handle_video(video_path, width, height):
         cv2.imshow('Video Face Detection', frame)
         cv2.setWindowProperty('Video Face Detection', cv2.WND_PROP_TOPMOST, 1)
         key = cv2.waitKey(1)
-        if key == ord('q') or key == 27:
+        if key == ord('q') or key == 27 or cv2.getWindowProperty('Video Face Detection', cv2.WND_PROP_VISIBLE) < 1:
             break
     cap.release()
     cv2.destroyAllWindows()
-
-
-
-
-
