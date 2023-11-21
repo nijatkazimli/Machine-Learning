@@ -29,10 +29,16 @@ class OpenCVFaceRecognition(FaceRecognitionHandler):
         faces = self.model.detect_faces(image)
         self.draw_face_rectangles(image, faces)
         if image.shape[1] > width or image.shape[0] > height:
-            # Resize the image only if it is bigger than the screen size
-            image = cv2.resize(image, (width, height))    
+            # Calculate the ratio of the new height to the old height and resize the image
+            r = min(width / image.shape[1], height / image.shape[0])
+            dim = (int(image.shape[1] * r), int(image.shape[0] * r))
+            image = cv2.resize(image, dim)
         cv2.imshow('Image Face Detection', image)
         cv2.setWindowProperty('Image Face Detection', cv2.WND_PROP_TOPMOST, 1)
+
+        # Move
+        cv2.moveWindow('Image Face Detection', 0, 0)
+
         key = cv2.waitKey(0)
         if key == ord('q') or key == 27 or cv2.getWindowProperty('Image Face Detection', cv2.WND_PROP_VISIBLE) < 1:
             cv2.destroyAllWindows()
@@ -44,13 +50,19 @@ class OpenCVFaceRecognition(FaceRecognitionHandler):
             if not ret:
                 break
 
-            # Resize frame to fit screen
-            frame = cv2.resize(frame, (width, height))
+            # Calculate the ratio of the new height to the old height and resize the frame
+            r = min(width / frame.shape[1], height / frame.shape[0])
+            dim = (int(frame.shape[1] * r), int(frame.shape[0] * r))
+            frame = cv2.resize(frame, dim)
 
             faces = self.model.detect_faces(frame)
             self.draw_face_rectangles(frame, faces)
             cv2.imshow('Video Face Detection', frame)
             cv2.setWindowProperty('Video Face Detection', cv2.WND_PROP_TOPMOST, 1)
+
+            # Move
+            cv2.moveWindow('Video Face Detection', 0, 0)
+
             key = cv2.waitKey(1)
             if key == ord('q') or key == 27 or cv2.getWindowProperty('Video Face Detection', cv2.WND_PROP_VISIBLE) < 1:
                 break
