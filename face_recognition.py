@@ -25,10 +25,11 @@ def handle_camera(cap):
     cap.release()
     cv2.destroyAllWindows()
 
-def handle_image(image_path):
+def handle_image(image_path, width, height):
     image = cv2.imread(image_path)
     faces = detect_faces(image)
     draw_face_rectangles(image, faces)
+    image = cv2.resize(image, (width, height))
     cv2.imshow('Image Face Detection', image)
     cv2.setWindowProperty('Image Face Detection', cv2.WND_PROP_TOPMOST, 1)
     key = cv2.waitKey(0)
@@ -38,7 +39,7 @@ def handle_image(image_path):
 def handle_video(video_path, width, height):
     cap = cv2.VideoCapture(video_path)
     while True:
-        ret, frame = cap.read()
+        ret, frame = cap.read() # Read frame from video
         if not ret:
             break
 

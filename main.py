@@ -12,7 +12,7 @@ def choose_folder():
         if file.lower().endswith(('.png', '.jpg', '.jpeg', '.tiff', '.bmp', '.gif', '.jfif')):
             image_path = os.path.join(folder_path, file)
             print("Processing image:", image_path)
-            face_recognition.handle_image(image_path)
+            face_recognition.handle_image(image_path, screen_width, screen_height)
 
 
 def choose_video():
