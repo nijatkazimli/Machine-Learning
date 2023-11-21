@@ -9,7 +9,7 @@ def choose_folder():
     folder_path = filedialog.askdirectory()
     print("Folder Selected:", folder_path)
     for file in os.listdir(folder_path):
-        if file.lower().endswith(('.png', '.jpg', '.jpeg', '.tiff', '.bmp', '.gif')):
+        if file.lower().endswith(('.png', '.jpg', '.jpeg', '.tiff', '.bmp', '.gif', '.jfif')):
             image_path = os.path.join(folder_path, file)
             print("Processing image:", image_path)
             face_recognition.handle_image(image_path)
