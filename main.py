@@ -7,7 +7,7 @@ def main():
     face_recognition = OpenCVFaceRecognition(model)
 
     gui = GUIImplementation(face_recognition)
-    gui.show()  # Start the GUI
+    gui.show()
 
 if __name__ == "__main__":
     main()
