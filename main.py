@@ -1,34 +1,46 @@
 import tkinter as tk
-from tkinter import filedialog, ttk
+from tkinter import filedialog, ttk , messagebox
 import face_recognition
 import cv2
 import os
 
 
 def choose_folder():
-    folder_path = filedialog.askdirectory()
-    print("Folder Selected:", folder_path)
-    for file in os.listdir(folder_path):
-        if file.lower().endswith(('.png', '.jpg', '.jpeg', '.tiff', '.bmp', '.gif', '.jfif')):
-            image_path = os.path.join(folder_path, file)
-            print("Processing image:", image_path)
-            face_recognition.handle_image(image_path, screen_width, screen_height)
-
+    try:
+        folder_path = filedialog.askdirectory()
+        if not folder_path:
+            raise Exception("No folder selected")
+        print("Folder Selected:", folder_path)
+        for file in os.listdir(folder_path):
+            if file.lower().endswith(('.png', '.jpg', '.jpeg', '.tiff', '.bmp', '.gif', '.jfif')):
+                image_path = os.path.join(folder_path, file)
+                print("Processing image:", image_path)
+                face_recognition.handle_image(image_path, screen_width, screen_height)
+    except Exception as e:
+        messagebox.showerror("Error", f"An error occurred: {e}")
 
 def choose_video():
-    filetypes = [
-        ('Video files', '*.mp4 *.avi *.mov *.mkv *.flv *.wmv'),  # Add or remove formats as needed
-        ('All files', '*.*')
-    ]
-    file_path = filedialog.askopenfilename(filetypes=filetypes)
-    if file_path:  # Check if a file was actually selected
+    try:
+        filetypes = [
+            ('Video files', '*.mp4 *.avi *.mov *.mkv *.flv *.wmv'),
+            ('All files', '*.*')
+        ]
+        file_path = filedialog.askopenfilename(filetypes=filetypes)
+        if not file_path:
+            raise Exception("No video file selected")
         print("File Selected:", file_path)
         face_recognition.handle_video(file_path, screen_width, screen_height)
-
+    except Exception as e:
+        messagebox.showerror("Error", f"An error occurred: {e}")
 
 def start_camera():
-    cap = cv2.VideoCapture(0)
-    face_recognition.handle_camera(cap)
+    try:
+        cap = cv2.VideoCapture(0)
+        if not cap.isOpened():
+            raise Exception("Failed to open camera")
+        face_recognition.handle_camera(cap)
+    except Exception as e:
+        messagebox.showerror("Error", f"An error occurred: {e}")
 
 
 root = tk.Tk()
