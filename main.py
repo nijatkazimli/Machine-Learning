@@ -1,9 +1,9 @@
 import tkinter as tk
 from tkinter import filedialog, ttk
-from PIL import Image
 import face_recognition
 import cv2
 import os
+
 
 def choose_folder():
     folder_path = filedialog.askdirectory()
@@ -14,14 +14,22 @@ def choose_folder():
             print("Processing image:", image_path)
             face_recognition.handle_image(image_path)
 
+
 def choose_video():
-    file_path = filedialog.askopenfilename()
-    print("File Selected:", file_path)
-    face_recognition.handle_video(file_path, screen_width, screen_height)
+    filetypes = [
+        ('Video files', '*.mp4 *.avi *.mov *.mkv *.flv *.wmv'),  # Add or remove formats as needed
+        ('All files', '*.*')
+    ]
+    file_path = filedialog.askopenfilename(filetypes=filetypes)
+    if file_path:  # Check if a file was actually selected
+        print("File Selected:", file_path)
+        face_recognition.handle_video(file_path, screen_width, screen_height)
+
 
 def start_camera():
     cap = cv2.VideoCapture(0)
     face_recognition.handle_camera(cap)
+
 
 root = tk.Tk()
 root.title("Face Recognition / Age Detection")
@@ -53,4 +61,3 @@ root.rowconfigure(4, weight=0)
 root.rowconfigure(6, weight=0)
 
 root.mainloop()
-
