@@ -1,9 +1,9 @@
-from models.face_recognition.haar_fast import HaarFaceModel
+from models.face_recognition.haar_fast import HaarFastModel
 from models.face_recognition.handler import OpenCVFaceRecognition
 from app.gui import GUIImplementation
 
 def main():
-    model = HaarFaceModel()
+    model = HaarFastModel()
     face_recognition = OpenCVFaceRecognition(model)
 
     gui = GUIImplementation(face_recognition)

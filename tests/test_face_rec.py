@@ -2,7 +2,8 @@ import os
 import time
 import cv2
 from models.face_recognition.handler import OpenCVFaceRecognition
-from models.face_recognition.haar_fast import HaarFaceModel
+from models.face_recognition.haar_fast import HaarFastModel
+from models.face_recognition.haar_slow import HaarSlowModel
 
 def count_images_with_faces(face_recognition, directory):
     count = 0
@@ -17,10 +18,12 @@ def count_images_with_faces(face_recognition, directory):
                 count += 1
     return count, total,
 
-haar_model = HaarFaceModel()
-haar_face_recognition = OpenCVFaceRecognition(haar_model)
+haar_fast = HaarFastModel()
+haar_fast_handler = OpenCVFaceRecognition(haar_fast)
+haar_slow = HaarSlowModel()
+haar_slow_handler = OpenCVFaceRecognition(haar_slow)
 
-models = [haar_face_recognition]
+models = [haar_fast_handler, haar_slow_handler]
 
 faces_dir = './tests/data/faces/'
 other_dir = './tests/data/other/'
