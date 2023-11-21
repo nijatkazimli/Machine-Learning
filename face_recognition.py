@@ -29,7 +29,9 @@ def handle_image(image_path, width, height):
     image = cv2.imread(image_path)
     faces = detect_faces(image)
     draw_face_rectangles(image, faces)
-    image = cv2.resize(image, (width, height))
+    if image.shape[1] > width or image.shape[0] > height:
+        # Resize the image only if it is bigger than the screen size
+        image = cv2.resize(image, (width, height))    
     cv2.imshow('Image Face Detection', image)
     cv2.setWindowProperty('Image Face Detection', cv2.WND_PROP_TOPMOST, 1)
     key = cv2.waitKey(0)
