@@ -1,14 +1,10 @@
 import cv2
+from interfaces import FaceRecognitionHandler, FaceRecognitionModel
 
-class FaceRecognition(FaceRecognitionHandler):
+class OpenCVFaceRecognition(FaceRecognitionHandler):
     def __init__(self, model: FaceRecognitionModel):
-        self.face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+        self.model = model
         super().__init__(model)
-
-    def detect_faces(self, image):
-        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-        faces = self.face_cascade.detectMultiScale(gray, scaleFactor=1.3, minNeighbors=5, minSize=(30, 30))
-        return faces
 
     def draw_face_rectangles(self, image, faces):
         for (x, y, w, h) in faces:
@@ -18,7 +14,7 @@ class FaceRecognition(FaceRecognitionHandler):
         while True:
             ret, frame = cap.read()
             if ret:
-                faces = self.detect_faces(frame)
+                faces = self.model.detect_faces(frame)
                 self.draw_face_rectangles(frame, faces)
                 cv2.imshow('Camera Face Detection', frame)
                 cv2.setWindowProperty('Camera Face Detection', cv2.WND_PROP_TOPMOST, 1)
@@ -30,7 +26,7 @@ class FaceRecognition(FaceRecognitionHandler):
 
     def handle_image(self, image_path, width, height):
         image = cv2.imread(image_path)
-        faces = self.detect_faces(image)
+        faces = self.model.detect_faces(image)
         self.draw_face_rectangles(image, faces)
         if image.shape[1] > width or image.shape[0] > height:
             # Resize the image only if it is bigger than the screen size
@@ -51,7 +47,7 @@ class FaceRecognition(FaceRecognitionHandler):
             # Resize frame to fit screen
             frame = cv2.resize(frame, (width, height))
 
-            faces = self.detect_faces(frame)
+            faces = self.model.detect_faces(frame)
             self.draw_face_rectangles(frame, faces)
             cv2.imshow('Video Face Detection', frame)
             cv2.setWindowProperty('Video Face Detection', cv2.WND_PROP_TOPMOST, 1)
