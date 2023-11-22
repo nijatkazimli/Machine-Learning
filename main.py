@@ -5,8 +5,9 @@ from app.gui import GUIImplementation
 
 def main():
     resnetmodel = ResNetModel()
-    haar_front_model = HaarCombinedModel()
-    face_recognition = OpenCVFaceRecognition([resnetmodel, haar_front_model])
+    haar_front_model = HaarFrontModel()
+    haar_profile_model = HaarProfileModel()
+    face_recognition = OpenCVFaceRecognition([resnetmodel, haar_front_model, haar_profile_model])
 
     gui = GUIImplementation(face_recognition)
     gui.show()
