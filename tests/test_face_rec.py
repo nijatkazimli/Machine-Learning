@@ -2,8 +2,8 @@ import os
 import time
 import cv2
 from models.face_recognition.handler import OpenCVFaceRecognition
-from models.face_recognition.haar_fast import HaarFastModel
-from models.face_recognition.haar_slow import HaarSlowModel
+from models.face_recognition.haar import HaarFrontModel, HaarProfileModel, HaarCombinedModel
+from models.face_recognition.resnet import ResNetModel
 
 def count_images_with_faces(face_recognition, directory):
     count = 0
@@ -16,14 +16,20 @@ def count_images_with_faces(face_recognition, directory):
             faces = face_recognition.model.detect_faces(img)
             if len(faces) > 0:
                 count += 1
-    return count, total,
+    return count, total
 
-haar_fast = HaarFastModel()
+haar_fast = HaarFrontModel()
 haar_fast_handler = OpenCVFaceRecognition(haar_fast)
-haar_slow = HaarSlowModel()
+haar_slow = HaarProfileModel()
 haar_slow_handler = OpenCVFaceRecognition(haar_slow)
+haar_combined = HaarCombinedModel()
+haar_combined_handler = OpenCVFaceRecognition(haar_combined)
 
-models = [haar_fast_handler, haar_slow_handler]
+resnet = ResNetModel()
+resnet_handler = OpenCVFaceRecognition(resnet)
+
+
+models = [haar_fast_handler, haar_slow_handler, haar_combined_handler, resnet_handler]
 
 faces_dir = './tests/data/faces/'
 other_dir = './tests/data/other/'
