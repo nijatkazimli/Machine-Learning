@@ -1,6 +1,5 @@
 opencv-python
 scikit-learn
 numpy
-tkinter
 torch
 torchmetrics
