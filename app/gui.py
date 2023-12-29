@@ -14,6 +14,15 @@ class GUIImplementation(GUI):
         self.screen_width = self.root.winfo_screenwidth()
         self.screen_height = self.root.winfo_screenheight()
 
+        # Set the window size
+        window_width = 600
+        window_height = 400
+
+        x = int((self.screen_width / 2) - (window_width / 2))
+        y = int((self.screen_height / 2) - (window_height / 2))
+
+        self.root.geometry(f'{window_width}x{window_height}+{x}+{y}')
+
         style = ttk.Style()
         style.configure("TButton", font=("Arial", 10))
 
