@@ -92,7 +92,7 @@ def calculate_map(faces_dict, bounding_boxes):
     map = calculate_average_precision(precisions, recalls)
     return map
 
-bounding_boxes = get_correct_bounding_boxes('./tests/data/faces/', './tests/data/wider_face_val_bbx_gt.txt')
+bounding_boxes = get_correct_bounding_boxes('./data/faces/', './data/wider_face_val_bbx_gt.txt')
 
 haar_fast = HaarFrontModel()
 haar_fast_handler = OpenCVFaceRecognition(haar_fast)
@@ -106,8 +106,8 @@ resnet_handler = OpenCVFaceRecognition(resnet)
 
 models = [haar_fast_handler, haar_slow_handler, haar_combined_handler, resnet_handler]
 
-faces_dir = './tests/data/faces/'
-other_dir = './tests/data/other/'
+faces_dir = './data/faces/'
+other_dir = './data/other/'
 
 for model in models:
     print(f"Model: {type(model.model).__name__}")
