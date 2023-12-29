@@ -32,20 +32,20 @@ class OpenCVFaceRecognition(FaceRecognitionHandler):
         for model in self.models:
             faces = model.detect_faces(image)
             self.draw_face_rectangles(image, faces, model.color)
+
         if image.shape[1] > width or image.shape[0] > height:
-            # Calculate the ratio of the new height to the old height and resize the image
             r = min(width / image.shape[1], height / image.shape[0])
             dim = (int(image.shape[1] * r), int(image.shape[0] * r))
             image = cv2.resize(image, dim)
+
         cv2.imshow('Image Face Detection', image)
         cv2.setWindowProperty('Image Face Detection', cv2.WND_PROP_TOPMOST, 1)
-
-        # Move
         cv2.moveWindow('Image Face Detection', 0, 0)
-
         key = cv2.waitKey(0)
         if key == ord('q') or key == 27 or cv2.getWindowProperty('Image Face Detection', cv2.WND_PROP_VISIBLE) < 1:
             cv2.destroyAllWindows()
+
+        return image
 
     def handle_video(self, video_path, width, height):
         cap = cv2.VideoCapture(video_path)

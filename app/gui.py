@@ -52,17 +52,36 @@ class GUIImplementation(GUI):
         self.root.rowconfigure(4, weight=0)
         self.root.rowconfigure(6, weight=0)
 
+    # def choose_folder(self):
+    #     folder_path = filedialog.askdirectory()
+    #     folder_path = os.path.normpath(folder_path)
+    #     if not folder_path:
+    #         raise Exception("No folder selected")
+    #     print("Folder Selected:", folder_path)
+    #     for file in os.listdir(folder_path):
+    #         if file.lower().endswith(('.png', '.jpg', '.jpeg', '.tiff', '.bmp', '.gif', '.jfif')):
+    #             image_path = os.path.join(folder_path, file)
+    #             print("Processing image:", image_path)
+    #             self.handler.handle_image(image_path, self.screen_width, self.screen_height)
+
     def choose_folder(self):
         folder_path = filedialog.askdirectory()
         folder_path = os.path.normpath(folder_path)
         if not folder_path:
             raise Exception("No folder selected")
         print("Folder Selected:", folder_path)
+
+        saved_folder_path = os.path.join(folder_path, "Processed_Images")
+        if not os.path.exists(saved_folder_path):
+            os.makedirs(saved_folder_path)
+
         for file in os.listdir(folder_path):
             if file.lower().endswith(('.png', '.jpg', '.jpeg', '.tiff', '.bmp', '.gif', '.jfif')):
                 image_path = os.path.join(folder_path, file)
                 print("Processing image:", image_path)
-                self.handler.handle_image(image_path, self.screen_width, self.screen_height)
+                processed_image = self.handler.handle_image(image_path, self.screen_width, self.screen_height)
+                saved_image_path = os.path.join(saved_folder_path, file)
+                cv2.imwrite(saved_image_path, processed_image)
 
     def choose_video(self):
         try:
