@@ -5,9 +5,8 @@ from interfaces import FaceRecognitionModel
 
 class ResNetModel(FaceRecognitionModel):
     def __init__(self, model_path="", prototxt_path=""):
-        print("Current working directory:", os.getcwd())
         self.color = (0, 255, 0)
-        prefix = '../models/face_recognition/'
+        prefix = './models/face_recognition/' #PROBLEM THAT WHEN . the app works but tests dont and if .. its the other way around
         model_path = prefix + 'res10_300x300_ssd_iter_140000.caffemodel'
         prototxt_path = prefix + 'deploy.prototxt'
         prototxt_path = os.path.normpath(prototxt_path)
