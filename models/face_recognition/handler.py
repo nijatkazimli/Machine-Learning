@@ -1,5 +1,7 @@
 import cv2
+import os
 from interfaces import FaceRecognitionHandler, FaceRecognitionModel
+
 
 class OpenCVFaceRecognition(FaceRecognitionHandler):
     def __init__(self, models: [FaceRecognitionModel]):
@@ -49,12 +51,17 @@ class OpenCVFaceRecognition(FaceRecognitionHandler):
 
     def handle_video(self, video_path, width, height):
         cap = cv2.VideoCapture(video_path)
+        fps = cap.get(cv2.CAP_PROP_FPS)
+        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+        processed_video_path = os.path.splitext(video_path)[0] + "_processed.mp4"
+        out = cv2.VideoWriter(processed_video_path, fourcc, fps, (width, height))
+
         while True:
-            ret, frame = cap.read() # Read frame from video
+            ret, frame = cap.read()
             if not ret:
                 break
 
-            # Calculate the ratio of the new height to the old height and resize the frame
+            # Resize the frame
             r = min(width / frame.shape[1], height / frame.shape[0])
             dim = (int(frame.shape[1] * r), int(frame.shape[0] * r))
             frame = cv2.resize(frame, dim)
@@ -62,14 +69,17 @@ class OpenCVFaceRecognition(FaceRecognitionHandler):
             for model in self.models:
                 faces = model.detect_faces(frame)
                 self.draw_face_rectangles(frame, faces, model.color)
+
+            out.write(frame)
             cv2.imshow('Video Face Detection', frame)
             cv2.setWindowProperty('Video Face Detection', cv2.WND_PROP_TOPMOST, 1)
-
-            # Move
             cv2.moveWindow('Video Face Detection', 0, 0)
 
             key = cv2.waitKey(1)
             if key == ord('q') or key == 27 or cv2.getWindowProperty('Video Face Detection', cv2.WND_PROP_VISIBLE) < 1:
                 break
+
         cap.release()
+        out.release()
         cv2.destroyAllWindows()
+        return processed_video_path

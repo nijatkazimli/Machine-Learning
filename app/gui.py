@@ -52,18 +52,6 @@ class GUIImplementation(GUI):
         self.root.rowconfigure(4, weight=0)
         self.root.rowconfigure(6, weight=0)
 
-    # def choose_folder(self):
-    #     folder_path = filedialog.askdirectory()
-    #     folder_path = os.path.normpath(folder_path)
-    #     if not folder_path:
-    #         raise Exception("No folder selected")
-    #     print("Folder Selected:", folder_path)
-    #     for file in os.listdir(folder_path):
-    #         if file.lower().endswith(('.png', '.jpg', '.jpeg', '.tiff', '.bmp', '.gif', '.jfif')):
-    #             image_path = os.path.join(folder_path, file)
-    #             print("Processing image:", image_path)
-    #             self.handler.handle_image(image_path, self.screen_width, self.screen_height)
-
     def choose_folder(self):
         folder_path = filedialog.askdirectory()
         folder_path = os.path.normpath(folder_path)
@@ -91,7 +79,9 @@ class GUIImplementation(GUI):
             ]
             file_path = filedialog.askopenfilename(filetypes=filetypes)
             if file_path:
-                self.handler.handle_video(file_path, self.screen_width, self.screen_height)
+                processed_video_path = self.handler.handle_video(file_path, self.screen_width, self.screen_height)
+                print("Processed video saved at:", processed_video_path)
+                messagebox.showinfo("Success", f"Processed video saved at: {processed_video_path}")
         except Exception as e:
             messagebox.showerror("Error", f"An error occurred: {e}")
 
