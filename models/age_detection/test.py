@@ -25,12 +25,13 @@ while True:
     # Process each detected face
     for (x, y, w, h) in faces:
         # Extract the face region
-        face_roi = frame[y:y + h, x:x + w]
+        face_roi = gray_frame[y:y + h, x:x + w]
 
         # Preprocess the face image
-        face_image = cv2.resize(face_roi, (224, 224))
-        face_image = img_to_array(face_image) / 255.0
-        face_image = np.expand_dims(face_image, axis=0)
+        face_image = cv2.resize(face_roi, (128, 128))  # Resize to match the expected input shape
+        face_image = np.expand_dims(face_image, axis=-1)  # Add a channel dimension
+        face_image = face_image / 255.0  # Normalize to [0, 1]
+        face_image = np.expand_dims(face_image, axis=0)  # Add a batch dimension
 
         # Predict the age using the age detection model
         predicted_age = age_model.predict(face_image)[0][0]

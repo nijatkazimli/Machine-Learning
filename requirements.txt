@@ -4,3 +4,5 @@ numpy
 torch
 torchmetrics
 tensorflow
+tqdm
+Pillow==9.5.0
