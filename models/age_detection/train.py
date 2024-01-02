@@ -4,8 +4,9 @@ import numpy as np
 from tensorflow.keras.preprocessing.image import img_to_array
 from tensorflow.keras import layers, models
 
-# Define the path to your dataset folder
-dataset_folder = "../../dataset/"
+script_dir = os.path.dirname(__file__)
+
+dataset_folder = os.path.join(script_dir, "..", "..", "dataset")
 
 # Function to extract age from file name
 def extract_age(file_name):
