@@ -1,6 +1,7 @@
 import cv2
 import os
 from interfaces import FaceRecognitionHandler, FaceRecognitionModel
+import numpy as np
 
 
 class OpenCVFaceRecognition(FaceRecognitionHandler):
@@ -14,20 +15,68 @@ class OpenCVFaceRecognition(FaceRecognitionHandler):
         for (x, y, w, h) in faces:
             cv2.rectangle(image, (x, y), (x + w, y + h), color, 2)
 
+    # def handle_camera(self, cap):
+    #     while True:
+    #         ret, frame = cap.read()
+    #         if ret:
+    #             for model in self.models:
+    #                 faces = model.detect_faces(frame)
+    #                 self.draw_face_rectangles(frame, faces, model.color)
+    #             cv2.imshow('Camera Face Detection', frame)
+    #             cv2.setWindowProperty('Camera Face Detection', cv2.WND_PROP_TOPMOST, 1)
+    #             key = cv2.waitKey(1)
+    #             if key == ord('q') or key == 27 or cv2.getWindowProperty('Camera Face Detection',
+    #                                                                      cv2.WND_PROP_VISIBLE) < 1:
+    #                 break
+    #     cap.release()
+    #     cv2.destroyAllWindows()
+
     def handle_camera(self, cap):
+        cv2.namedWindow('Camera Face Detection', cv2.WINDOW_NORMAL)
+
         while True:
             ret, frame = cap.read()
             if ret:
+                # Original frame aspect ratio
+                frame_height, frame_width = frame.shape[:2]
+                aspect_ratio = frame_width / frame_height
+
+                # Get current window size
+                window_width, window_height = cv2.getWindowImageRect('Camera Face Detection')[2:]
+                window_aspect_ratio = window_width / window_height
+
+                # Calculate new frame dimensions
+                if window_aspect_ratio > aspect_ratio:
+                    # Window is wider than the frame
+                    new_height = window_height
+                    new_width = int(aspect_ratio * new_height)
+                else:
+                    # Window is taller than the frame
+                    new_width = window_width
+                    new_height = int(new_width / aspect_ratio)
+
+                # Resize frame
+                resized_frame = cv2.resize(frame, (new_width, new_height))
+
+                # Create a black canvas and center the frame
+                canvas = np.zeros((window_height, window_width, 3), dtype='uint8')
+                x_offset = (window_width - new_width) // 2
+                y_offset = (window_height - new_height) // 2
+                canvas[y_offset:y_offset+new_height, x_offset:x_offset+new_width] = resized_frame
+
                 for model in self.models:
-                    faces = model.detect_faces(frame)
-                    self.draw_face_rectangles(frame, faces, model.color)
-                cv2.imshow('Camera Face Detection', frame)
+                    faces = model.detect_faces(canvas)
+                    self.draw_face_rectangles(canvas, faces, model.color)
+
+                cv2.imshow('Camera Face Detection', canvas)
                 cv2.setWindowProperty('Camera Face Detection', cv2.WND_PROP_TOPMOST, 1)
                 key = cv2.waitKey(1)
                 if key == ord('q') or key == 27 or cv2.getWindowProperty('Camera Face Detection', cv2.WND_PROP_VISIBLE) < 1:
                     break
+
         cap.release()
         cv2.destroyAllWindows()
+
 
     def handle_image(self, image_path, width, height):
         image = cv2.imread(image_path)
