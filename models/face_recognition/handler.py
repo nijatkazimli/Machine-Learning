@@ -21,6 +21,7 @@ class OpenCVFaceRecognition(FaceRecognitionHandler):
             x, y, w, h = np.int32(x), np.int32(y), np.int32(w), np.int32(h)
             cv2.rectangle(image, (x, y), (x + w, y + h), color, 2)
 
+    # Previous stable version
     # def handle_camera(self, cap):
     #     while True:
     #         ret, frame = cap.read()
@@ -47,7 +48,6 @@ class OpenCVFaceRecognition(FaceRecognitionHandler):
                 frame_height, frame_width = frame.shape[:2]
                 aspect_ratio = frame_width / frame_height
 
-                # Get current window size
                 window_width, window_height = cv2.getWindowImageRect('Camera Face Detection')[2:]
                 if window_width == 0 or window_height == 0:
                     continue
@@ -63,25 +63,20 @@ class OpenCVFaceRecognition(FaceRecognitionHandler):
                     new_width = window_width
                     new_height = int(new_width / aspect_ratio)
 
-                # Resize frame
                 resized_frame = cv2.resize(frame, (new_width, new_height))
 
-                # Perform face detection and draw rectangles on the resized_frame
                 for model in self.models:
                     faces = model.detect_faces(resized_frame)
                     self.draw_face_rectangles(resized_frame, faces, model.color)
 
-                # Update the frame to be saved under lock
                 with self.frame_lock:
                     self.save_frame = np.copy(resized_frame)
 
-                # Create a black canvas and center the resized frame
                 canvas = np.zeros((window_height, window_width, 3), dtype='uint8')
                 x_offset = (window_width - new_width) // 2
                 y_offset = (window_height - new_height) // 2
                 canvas[y_offset:y_offset + new_height, x_offset:x_offset + new_width] = resized_frame
 
-                # Display the save instruction
                 instruction_text = "Press 's' to save the frame"
                 cv2.putText(canvas, instruction_text, (10, window_height - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
                             (255, 255, 255), 1, cv2.LINE_AA)
@@ -100,11 +95,9 @@ class OpenCVFaceRecognition(FaceRecognitionHandler):
         cv2.destroyAllWindows()
 
     def save_image_thread(self):
-        # Tkinter dialog in a separate thread
         root = Tk()
         root.withdraw()
 
-        # Keep the file dialog always on top
         root.attributes('-topmost', True)
 
         with self.frame_lock:
