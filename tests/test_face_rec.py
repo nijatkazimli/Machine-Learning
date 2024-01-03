@@ -1,11 +1,13 @@
 import os
 import time
 import cv2
-from sklearn.metrics import precision_score, recall_score, f1_score
+import numpy as np
+from sklearn.metrics import precision_score, recall_score, f1_score, average_precision_score
 
 from models.face_recognition.handler import OpenCVFaceRecognition
 from models.face_recognition.haar import HaarFrontModel, HaarProfileModel, HaarCombinedModel
-from models.face_recognition.resnet import ResNetModel
+from models.face_recognition.resnet_caffee import ResNetCaffeeModel
+from models.face_recognition.yunet import YuNetModel
 
 def get_correct_bounding_boxes(directory, text_file):
     bounding_boxes = {}
@@ -76,13 +78,18 @@ def calculate_metrics_for_image(predicted_boxes, correct_boxes):
 
 def evaluate_model(face_recognition, directory, bounding_boxes):
     all_y_true, all_y_pred = [], []
-
+    tp, fp, fn = 0, 0, 0
     for filename in os.listdir(directory):
         if filename.endswith((".jpg", ".png")):
             img_path = os.path.join(directory, filename)
             img = cv2.imread(img_path)
             predicted_boxes = face_recognition.model.detect_faces(img)
             correct_boxes = bounding_boxes.get(filename, [])
+
+            ttp, ffp, ffn = calculate_metrics_for_image(predicted_boxes, correct_boxes)
+            tp += ttp
+            fp += ffp
+            fn += ffn
 
             y_true, y_pred = get_classification_labels(predicted_boxes, correct_boxes)
             all_y_true.extend(y_true)
@@ -91,10 +98,11 @@ def evaluate_model(face_recognition, directory, bounding_boxes):
     precision = precision_score(all_y_true, all_y_pred)
     recall = recall_score(all_y_true, all_y_pred)
     f1 = f1_score(all_y_true, all_y_pred)
+    print(f"true positives: {tp}, false positives:{fp}, false negatives:{fn}")
 
     return precision, recall, f1
 
-bounding_boxes = get_correct_bounding_boxes('./data/faces/', './data/wider_face_val_bbx_gt.txt')
+bounding_boxes = get_correct_bounding_boxes('./tests/data/faces/', './tests/data/wider_face_val_bbx_gt.txt')
 
 haar_fast = HaarFrontModel()
 haar_fast_handler = OpenCVFaceRecognition(haar_fast)
@@ -103,13 +111,16 @@ haar_slow_handler = OpenCVFaceRecognition(haar_slow)
 haar_combined = HaarCombinedModel()
 haar_combined_handler = OpenCVFaceRecognition(haar_combined)
 
-resnet = ResNetModel()
-resnet_handler = OpenCVFaceRecognition(resnet)
+resnet_caffee = ResNetCaffeeModel()
+resnet_caffee_handler = OpenCVFaceRecognition(resnet_caffee)
 
-models = [haar_fast_handler, haar_slow_handler, haar_combined_handler, resnet_handler]
+yunet = YuNetModel()
+yunet_handler = OpenCVFaceRecognition(yunet)
 
-faces_dir = './data/faces/'
-other_dir = './data/other/'
+models = [haar_fast_handler, resnet_caffee_handler, yunet_handler]
+
+faces_dir = './tests/data/faces/'
+other_dir = './tests/data/other/'
 
 for model in models:
     print(f"Model: {type(model.model).__name__}")
@@ -123,3 +134,19 @@ for model in models:
 
     time_taken = time.time() - start_time
     print(f"Time taken: {time_taken} seconds")
+
+print("YuNet with different thresholds")
+for threshold in np.arange(0.1, 1.0, 0.1):
+    yunet_handler.model.detector.setScoreThreshold(threshold)
+    start_time = time.time()
+    precision, recall, f1 = evaluate_model(yunet_handler, faces_dir, bounding_boxes)
+    time_taken = time.time() - start_time
+    print(f"Threshold: {threshold} Precision: {precision} Recall: {recall} F1-Score: {f1} Time taken: {time_taken}")
+
+print("ResNet with different thresholds")
+for threshold in np.arange(0.1, 1.0, 0.1):
+    resnet_caffee_handler.model.confidence_threshold = threshold
+    start_time = time.time()
+    precision, recall, f1 = evaluate_model(resnet_caffee_handler, faces_dir, bounding_boxes)
+    time_taken = time.time() - start_time
+    print(f"Threshold: {threshold} Precision: {precision} Recall: {recall} F1-Score: {f1} Time taken: {time_taken}")

@@ -1,13 +1,15 @@
 from models.face_recognition.haar import HaarFrontModel, HaarProfileModel, HaarCombinedModel
-from models.face_recognition.resnet import ResNetModel
+from models.face_recognition.resnet_caffee import ResNetCaffeeModel
+from models.face_recognition.yunet import YuNetModel
 from models.face_recognition.handler import OpenCVFaceRecognition
 from app.gui import GUIImplementation
 
 def main():
-    resnetmodel = ResNetModel()
+    resnetmodel = ResNetCaffeeModel()
     haar_front_model = HaarFrontModel()
     haar_profile_model = HaarProfileModel()
-    face_recognition = OpenCVFaceRecognition([resnetmodel, haar_front_model, haar_profile_model])
+    yn_model = YuNetModel()
+    face_recognition = OpenCVFaceRecognition([resnetmodel, yn_model])
 
     gui = GUIImplementation(face_recognition)
     gui.show()

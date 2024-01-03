@@ -1,5 +1,6 @@
 import cv2
 import os
+import numpy as np
 from interfaces import FaceRecognitionHandler, FaceRecognitionModel
 
 
@@ -12,6 +13,7 @@ class OpenCVFaceRecognition(FaceRecognitionHandler):
         if color is None:
             color = (0, 255, 0)
         for (x, y, w, h) in faces:
+            x, y, w, h = np.int32(x), np.int32(y), np.int32(w), np.int32(h)
             cv2.rectangle(image, (x, y), (x + w, y + h), color, 2)
 
     def handle_camera(self, cap):
