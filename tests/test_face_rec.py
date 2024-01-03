@@ -2,10 +2,10 @@ import os
 import time
 import cv2
 from sklearn.metrics import precision_score, recall_score, f1_score
-
 from models.face_recognition.handler import OpenCVFaceRecognition
 from models.face_recognition.haar import HaarFrontModel, HaarProfileModel, HaarCombinedModel
 from models.face_recognition.resnet import ResNetModel
+
 
 def get_correct_bounding_boxes(directory, text_file):
     bounding_boxes = {}

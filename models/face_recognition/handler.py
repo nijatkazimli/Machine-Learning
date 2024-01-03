@@ -77,7 +77,6 @@ class OpenCVFaceRecognition(FaceRecognitionHandler):
         cap.release()
         cv2.destroyAllWindows()
 
-
     def handle_image(self, image_path, width, height):
         image = cv2.imread(image_path)
         for model in self.models:
