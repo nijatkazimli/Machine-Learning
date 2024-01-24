@@ -5,7 +5,7 @@ class FaceRecognitionModel(ABC):
     def detect_faces(self, image):
         pass
 
-class FaceRecognitionHandler(ABC):
+class FaceHandler(ABC):
     def __init__(self, model: FaceRecognitionModel):
         self.model = model
 
@@ -22,7 +22,7 @@ class FaceRecognitionHandler(ABC):
         pass
 
 class GUI(ABC):
-    def __init__(self, handler: FaceRecognitionHandler):
+    def __init__(self, handler: FaceHandler):
         self.handler = handler
 
     @abstractmethod

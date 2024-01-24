@@ -1,13 +1,14 @@
 from models.face_recognition.haar import HaarFrontModel, HaarProfileModel, HaarCombinedModel
-from models.face_recognition.resnet import ResNetModel
-from models.face_recognition.handler import OpenCVFaceRecognition
+from models.face_recognition.resnet_caffee import ResNetCaffeeModel
+from models.face_recognition.yunet import YuNetModel
+from models.face_recognition.handler import OpenCVFaceHandler
+from tensorflow.keras.models import load_model
 from app.gui import GUIImplementation
 
 def main():
-    resnetmodel = ResNetModel()
-    haar_front_model = HaarFrontModel()
-    haar_profile_model = HaarProfileModel()
-    face_recognition = OpenCVFaceRecognition([resnetmodel, haar_front_model, haar_profile_model])
+    age_model = load_model('./models/age_detection/age_detection_model_augmentation_16_30.h5')
+    yn_model = YuNetModel()
+    face_recognition = OpenCVFaceHandler([yn_model], age_model)
 
     gui = GUIImplementation(face_recognition)
     gui.show()

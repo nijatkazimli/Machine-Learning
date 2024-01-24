@@ -3,3 +3,11 @@ scikit-learn
 numpy
 torch
 torchmetrics
+tensorflow
+tqdm
+Pillow==9.5.0
+pandas
+tensorflow
+keras
+matplotlib
+seaborn
