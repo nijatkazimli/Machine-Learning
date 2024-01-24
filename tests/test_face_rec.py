@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 from sklearn.metrics import precision_score, recall_score, f1_score, average_precision_score
 
-from models.face_recognition.handler import OpenCVFaceRecognition
+from models.face_recognition.handler import OpenCVFaceHandler
 from models.face_recognition.haar import HaarFrontModel, HaarProfileModel, HaarCombinedModel
 from models.face_recognition.resnet_caffee import ResNetCaffeeModel
 from models.face_recognition.yunet import YuNetModel
@@ -105,17 +105,17 @@ def evaluate_model(face_recognition, directory, bounding_boxes):
 bounding_boxes = get_correct_bounding_boxes('./tests/data/faces/', './tests/data/wider_face_val_bbx_gt.txt')
 
 haar_fast = HaarFrontModel()
-haar_fast_handler = OpenCVFaceRecognition(haar_fast)
+haar_fast_handler = OpenCVFaceHandler(haar_fast)
 haar_slow = HaarProfileModel()
-haar_slow_handler = OpenCVFaceRecognition(haar_slow)
+haar_slow_handler = OpenCVFaceHandler(haar_slow)
 haar_combined = HaarCombinedModel()
-haar_combined_handler = OpenCVFaceRecognition(haar_combined)
+haar_combined_handler = OpenCVFaceHandler(haar_combined)
 
 resnet_caffee = ResNetCaffeeModel()
-resnet_caffee_handler = OpenCVFaceRecognition(resnet_caffee)
+resnet_caffee_handler = OpenCVFaceHandler(resnet_caffee)
 
 yunet = YuNetModel()
-yunet_handler = OpenCVFaceRecognition(yunet)
+yunet_handler = OpenCVFaceHandler(yunet)
 
 models = [haar_fast_handler, resnet_caffee_handler, yunet_handler]
 

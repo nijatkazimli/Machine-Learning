@@ -2,11 +2,11 @@ import tkinter as tk
 from tkinter import filedialog, ttk, messagebox
 import cv2
 import os
-from interfaces import GUI, FaceRecognitionHandler
+from interfaces import GUI, FaceHandler
 
 
 class GUIImplementation(GUI):
-    def __init__(self, handler: FaceRecognitionHandler):
+    def __init__(self, handler: FaceHandler):
         super().__init__(handler)
         self.root = tk.Tk()
         self.root.title("Face Recognition / Age Detection")

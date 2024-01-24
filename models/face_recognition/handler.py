@@ -1,25 +1,65 @@
 import cv2
 import os
-from interfaces import FaceRecognitionHandler, FaceRecognitionModel
+from interfaces import FaceHandler, FaceRecognitionModel
 from tkinter import filedialog
 from tkinter import Tk
 import numpy as np
 import threading
 
 
-class OpenCVFaceRecognition(FaceRecognitionHandler):
-    def __init__(self, models: [FaceRecognitionModel]):
-        self.models = models
-        super().__init__(models)
+class OpenCVFaceHandler(FaceHandler):
+    def __init__(self, face_models: [FaceRecognitionModel], age_model):
+        self.models = face_models
+        super().__init__(face_models)
         self.save_frame = None
         self.frame_lock = threading.Lock()
+        self.age_model = age_model
 
-    def draw_face_rectangles(self, image, faces, color):
-        if color is None:
-            color = (0, 255, 0)
+    def age_detection(self, frame, faces):
+        ages = []
         for (x, y, w, h) in faces:
             x, y, w, h = np.int32(x), np.int32(y), np.int32(w), np.int32(h)
+
+            # age detection
+            gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+
+
+            # h, w = gray_frame.shape[:2]
+            # x, y, w, h = max(0, x), max(0, y), min(w, x + w) - x, min(h, y + h) - y
+            # face_roi = gray_frame[y:y + h, x:x + w]
+            # Extract the face region
+            max_h, max_w = frame.shape[:2]
+            face_roi = gray_frame[y:min(y + h, max_h), x:min(x + w, max_w)]
+
+
+
+            # Check if face_roi is not empty
+            if face_roi.size == 0:
+                ages.append(-1)
+                print("invalid coordinates.")
+                continue
+
+
+            # Preprocess the face image
+            face_image = cv2.resize(face_roi, (128, 128))  # Resize to match the expected input shape
+            face_image = np.expand_dims(face_image, axis=-1)  # Add a channel dimension
+            face_image = face_image / 255.0  # Normalize to [0, 1]
+            face_image = np.expand_dims(face_image, axis=0)  # Add a batch dimension
+
+        
+            # Predict the age using the age detection model
+            predicted_age = self.age_model.predict(face_image)[0][0]
+            ages.append(predicted_age)
+        return ages
+    
+    def draw_face_rectangles(self, image, faces, ages, color):
+        if color is None:
+            color = (0, 255, 0)
+        for i, (x, y, w, h) in enumerate(faces):
+            x, y, w, h = np.int32(x), np.int32(y), np.int32(w), np.int32(h)
             cv2.rectangle(image, (x, y), (x + w, y + h), color, 2)
+            rounded_age = int(round(ages[i]))
+            cv2.putText(image, f'{rounded_age}', (x+5, y+25), cv2.FONT_HERSHEY_SIMPLEX, 0.9, color, 2)
 
     # Previous stable version
     # def handle_camera(self, cap):
@@ -67,7 +107,8 @@ class OpenCVFaceRecognition(FaceRecognitionHandler):
 
                 for model in self.models:
                     faces = model.detect_faces(resized_frame)
-                    self.draw_face_rectangles(resized_frame, faces, model.color)
+                    ages = self.age_detection(resized_frame, faces)
+                    self.draw_face_rectangles(resized_frame, faces, ages, model.color)
 
                 with self.frame_lock:
                     self.save_frame = np.copy(resized_frame)
@@ -114,7 +155,8 @@ class OpenCVFaceRecognition(FaceRecognitionHandler):
         image = cv2.imread(image_path)
         for model in self.models:
             faces = model.detect_faces(image)
-            self.draw_face_rectangles(image, faces, model.color)
+            ages = self.age_detection(image, faces)
+            self.draw_face_rectangles(image, faces, ages, model.color)
 
         if image.shape[1] > width or image.shape[0] > height:
             r = min(width / image.shape[1], height / image.shape[0])
@@ -149,7 +191,8 @@ class OpenCVFaceRecognition(FaceRecognitionHandler):
 
             for model in self.models:
                 faces = model.detect_faces(frame)
-                self.draw_face_rectangles(frame, faces, model.color)
+                ages = self.age_detection(frame, faces)
+                self.draw_face_rectangles(frame, faces, ages, model.color)
 
             out.write(frame)
             cv2.imshow('Video Face Detection', frame)

@@ -5,7 +5,7 @@ from interfaces import FaceRecognitionModel
 from cv2 import FaceDetectorYN
 
 class YuNetModel(FaceRecognitionModel):
-    def __init__(self, model_path=".", input_size=(320, 320), threshold=0.9):
+    def __init__(self, model_path=".", input_size=(320, 320), threshold=0.6):
         self.color = (255, 128, 0)
         current_dir = os.path.dirname(os.path.realpath(__file__))
         model_path = os.path.join(current_dir, 'face_detection_yunet_2023mar.onnx')

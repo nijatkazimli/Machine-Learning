@@ -4,7 +4,7 @@ from tensorflow.keras.models import load_model
 from tensorflow.keras.preprocessing.image import img_to_array
 
 # Load the trained age detection model
-age_model = load_model('age_detection_model.h5')
+age_model = load_model('age_detection_model_augmentation_16_30.h5')
 
 # Load the OpenCV face detection classifier
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
