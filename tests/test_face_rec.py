@@ -2,6 +2,8 @@ import os
 import time
 import cv2
 import numpy as np
+import matplotlib.pyplot as plt
+
 from sklearn.metrics import precision_score, recall_score, f1_score, average_precision_score
 
 from models.face_recognition.handler import OpenCVFaceHandler
@@ -76,14 +78,14 @@ def calculate_metrics_for_image(predicted_boxes, correct_boxes):
     return tp, fp, fn
 
 
-def evaluate_model(face_recognition, directory, bounding_boxes):
+def evaluate_model(model, directory, bounding_boxes):
     all_y_true, all_y_pred = [], []
     tp, fp, fn = 0, 0, 0
     for filename in os.listdir(directory):
         if filename.endswith((".jpg", ".png")):
             img_path = os.path.join(directory, filename)
             img = cv2.imread(img_path)
-            predicted_boxes = face_recognition.model.detect_faces(img)
+            predicted_boxes = model.detect_faces(img)
             correct_boxes = bounding_boxes.get(filename, [])
 
             ttp, ffp, ffn = calculate_metrics_for_image(predicted_boxes, correct_boxes)
@@ -102,28 +104,23 @@ def evaluate_model(face_recognition, directory, bounding_boxes):
 
     return precision, recall, f1
 
-bounding_boxes = get_correct_bounding_boxes('./tests/data/faces/', './tests/data/wider_face_val_bbx_gt.txt')
+faces_dir = './tests/data/face_detection/'
+bounding_boxes = get_correct_bounding_boxes(faces_dir, './tests/data/wider_face_val_bbx_gt.txt')
 
-haar_fast = HaarFrontModel()
-haar_fast_handler = OpenCVFaceHandler(haar_fast)
-haar_slow = HaarProfileModel()
-haar_slow_handler = OpenCVFaceHandler(haar_slow)
-haar_combined = HaarCombinedModel()
-haar_combined_handler = OpenCVFaceHandler(haar_combined)
+haar = HaarFrontModel()
+#haar_handler = OpenCVFaceHandler(haar)
 
 resnet_caffee = ResNetCaffeeModel()
-resnet_caffee_handler = OpenCVFaceHandler(resnet_caffee)
+# resnet_caffee_handler = OpenCVFaceHandler(resnet_caffee)
 
 yunet = YuNetModel()
-yunet_handler = OpenCVFaceHandler(yunet)
+# yunet_handler = OpenCVFaceHandler(yunet)
 
-models = [haar_fast_handler, resnet_caffee_handler, yunet_handler]
+models = [haar, resnet_caffee, yunet]
 
-faces_dir = './tests/data/faces/'
-other_dir = './tests/data/other/'
 
 for model in models:
-    print(f"Model: {type(model.model).__name__}")
+    print(f"Model: {type(model).__name__}")
     start_time = time.time()
 
     precision, recall, f1 = evaluate_model(model, faces_dir, bounding_boxes)
@@ -135,18 +132,80 @@ for model in models:
     time_taken = time.time() - start_time
     print(f"Time taken: {time_taken} seconds")
 
-print("YuNet with different thresholds")
-for threshold in np.arange(0.1, 1.0, 0.1):
-    yunet_handler.model.detector.setScoreThreshold(threshold)
-    start_time = time.time()
-    precision, recall, f1 = evaluate_model(yunet_handler, faces_dir, bounding_boxes)
-    time_taken = time.time() - start_time
-    print(f"Threshold: {threshold} Precision: {precision} Recall: {recall} F1-Score: {f1} Time taken: {time_taken}")
+# print("YuNet with different thresholds")
+# for threshold in np.arange(0.1, 1.0, 0.1):
+#     yunet_handler.model.detector.setScoreThreshold(threshold)
+#     start_time = time.time()
+#     precision, recall, f1 = evaluate_model(yunet_handler, faces_dir, bounding_boxes)
+#     time_taken = time.time() - start_time
+#     print(f"Threshold: {threshold} Precision: {precision} Recall: {recall} F1-Score: {f1} Time taken: {time_taken}")
 
-print("ResNet with different thresholds")
-for threshold in np.arange(0.1, 1.0, 0.1):
-    resnet_caffee_handler.model.confidence_threshold = threshold
+# print("ResNet with different thresholds")
+# for threshold in np.arange(0.1, 1.0, 0.1):
+#     resnet_caffee_handler.model.confidence_threshold = threshold
+#     start_time = time.time()
+#     precision, recall, f1 = evaluate_model(resnet_caffee_handler, faces_dir, bounding_boxes)
+#     time_taken = time.time() - start_time
+#     print(f"Threshold: {threshold} Precision: {precision} Recall: {recall} F1-Score: {f1} Time taken: {time_taken}")
+
+# Initialize lists to store results
+yunet_precision, yunet_recall, yunet_f1, yunet_time = [], [], [], []
+resnet_precision, resnet_recall, resnet_f1, resnet_time = [], [], [], []
+
+thresholds = np.arange(0.1, 1.0, 0.1)
+
+# YuNet
+for threshold in thresholds:
+    yunet.detector.setScoreThreshold(threshold)
     start_time = time.time()
-    precision, recall, f1 = evaluate_model(resnet_caffee_handler, faces_dir, bounding_boxes)
+    precision, recall, f1 = evaluate_model(yunet, faces_dir, bounding_boxes)
     time_taken = time.time() - start_time
-    print(f"Threshold: {threshold} Precision: {precision} Recall: {recall} F1-Score: {f1} Time taken: {time_taken}")
+    yunet_precision.append(precision)
+    yunet_recall.append(recall)
+    yunet_f1.append(f1)
+    yunet_time.append(time_taken)
+
+# ResNet
+for threshold in thresholds:
+    resnet_caffee.confidence_threshold = threshold
+    start_time = time.time()
+    precision, recall, f1 = evaluate_model(resnet_caffee, faces_dir, bounding_boxes)
+    time_taken = time.time() - start_time
+    resnet_precision.append(precision)
+    resnet_recall.append(recall)
+    resnet_f1.append(f1)
+    resnet_time.append(time_taken)
+
+# Plotting
+plt.figure(figsize=(12, 8))
+
+plt.subplot(2, 2, 1)
+plt.plot(thresholds, yunet_precision, label='YuNet')
+plt.plot(thresholds, resnet_precision, label='ResNet')
+plt.xlabel('Threshold')
+plt.ylabel('Precision')
+plt.legend()
+
+plt.subplot(2, 2, 2)
+plt.plot(thresholds, yunet_recall, label='YuNet')
+plt.plot(thresholds, resnet_recall, label='ResNet')
+plt.xlabel('Threshold')
+plt.ylabel('Recall')
+plt.legend()
+
+plt.subplot(2, 2, 3)
+plt.plot(thresholds, yunet_f1, label='YuNet')
+plt.plot(thresholds, resnet_f1, label='ResNet')
+plt.xlabel('Threshold')
+plt.ylabel('F1 Score')
+plt.legend()
+
+plt.subplot(2, 2, 4)
+plt.plot(thresholds, yunet_time, label='YuNet')
+plt.plot(thresholds, resnet_time, label='ResNet')
+plt.xlabel('Threshold')
+plt.ylabel('Time Taken (seconds)')
+plt.legend()
+
+plt.tight_layout()
+plt.show()

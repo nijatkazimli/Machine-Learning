@@ -31,8 +31,6 @@ class OpenCVFaceHandler(FaceHandler):
             max_h, max_w = frame.shape[:2]
             face_roi = gray_frame[y:min(y + h, max_h), x:min(x + w, max_w)]
 
-
-
             # Check if face_roi is not empty
             if face_roi.size == 0:
                 ages.append(-1)

@@ -10,3 +10,4 @@ pandas
 tensorflow
 keras
 matplotlib
+seaborn
