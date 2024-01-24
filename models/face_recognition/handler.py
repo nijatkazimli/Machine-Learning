@@ -76,6 +76,22 @@ class OpenCVFaceHandler(FaceHandler):
     #     cap.release()
     #     cv2.destroyAllWindows()
 
+    # def handle_camera(self, cap):
+    #     while True:
+    #         ret, frame = cap.read()
+    #         if ret:
+    #             for model in self.models:
+    #                 faces = model.detect_faces(frame)
+    #                 self.draw_face_rectangles(frame, faces, model.color)
+    #             cv2.imshow('Camera Face Detection', frame)
+    #             cv2.setWindowProperty('Camera Face Detection', cv2.WND_PROP_TOPMOST, 1)
+    #             key = cv2.waitKey(1)
+    #             if key == ord('q') or key == 27 or cv2.getWindowProperty('Camera Face Detection',
+    #                                                                      cv2.WND_PROP_VISIBLE) < 1:
+    #                 break
+    #     cap.release()
+    #     cv2.destroyAllWindows()
+
     def handle_camera(self, cap):
         cv2.namedWindow('Camera Face Detection', cv2.WINDOW_NORMAL)
 
@@ -86,6 +102,7 @@ class OpenCVFaceHandler(FaceHandler):
                 frame_height, frame_width = frame.shape[:2]
                 aspect_ratio = frame_width / frame_height
 
+                # Get current window size
                 window_width, window_height = cv2.getWindowImageRect('Camera Face Detection')[2:]
                 if window_width == 0 or window_height == 0:
                     continue
