@@ -104,6 +104,8 @@ class OpenCVFaceHandler(FaceHandler):
 
                 # Get current window size
                 window_width, window_height = cv2.getWindowImageRect('Camera Face Detection')[2:]
+                if window_width == 0 or window_height == 0:
+                    continue
                 window_aspect_ratio = window_width / window_height
 
                 # Calculate new frame dimensions
